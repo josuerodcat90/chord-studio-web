@@ -15,6 +15,7 @@ Pick a major key and play any of seven chord pads. Layer chords, hold them with 
 - **Explore movement:** use the chord joystick to change intervals and add color to sounding chords.
 - **Keep time:** start the metronome, adjust its tempo from 40 to 240 BPM, and choose the number of beats per measure. Each click and light represents one beat; BPM counts clicks. Turn Everything Off stops it; Reset Configuration restores 120 BPM and four beats per measure.
 - **Make it yours:** choose a theme, switch between waveform and spectrum visualizers, or take the guided tour.
+- **Choose your language:** the interface detects Spanish from your browser and otherwise defaults to English. Use the Language/Idioma selector to change it; your choice is saved in this browser when storage is available, or kept for the current session otherwise.
 
 <details>
 <summary>See the mobile layout</summary>
@@ -36,12 +37,15 @@ Open the local URL printed by Vite. Close or finish the first-visit tour, then h
 
 ## Under the hood
 
-Built with **React**, **Vite**, and the **Web Audio API**. To run the unit tests or create a production build:
+Built with **React**, **Vite**, and the **Web Audio API**. To run the unit tests, lint the source and end-to-end tests with Biome, or create a production build:
 
 ```sh
 bun run test
+bun run lint
 bun run build
 ```
+
+The lint command may report warnings as well as errors; warnings do not cause it to fail.
 
 - [Playing guide](docs/playing.md) — controls, sustain, bindings, joystick, and more.
 - [Architecture and development](docs/architecture.md) — audio, state, storage, lifecycle, and testing.

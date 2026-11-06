@@ -13,7 +13,7 @@ for (const [name, viewport] of [['desktop', { width: 1280, height: 800 }], ['mob
       await expect(page.getByText(text, { exact: false })).toHaveCount(0);
     }
     await expect(page.getByRole('region', { name: 'Chord instrument' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Play chord I', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'PLAY CHORD I', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Start guided tour' })).toBeVisible();
   });
 }

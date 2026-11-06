@@ -2,8 +2,8 @@ import { test, expect } from './fixture.js';
 
 test('reverb presets are accessible and can change while a chord sounds', async ({ page }) => {
   await page.goto('/');
-  const reverb = page.getByRole('combobox', { name: 'Reverb', exact: true });
-  await expect(reverb.locator('option')).toHaveText(['Off', 'Room', 'Hall', 'Dreamy']);
+  const reverb = page.getByRole('combobox', { name: 'REVERB', exact: true });
+  await expect(reverb.locator('option')).toHaveText(['OFF', 'ROOM', 'HALL', 'DREAMY']);
   await expect(reverb).toHaveValue('off');
   await page.keyboard.down('1');
   await expect(page.locator('.screen strong')).toHaveText('C');
@@ -13,7 +13,7 @@ test('reverb presets are accessible and can change while a chord sounds', async 
     await expect(page.locator('.screen strong')).toHaveText('C');
   }
   await page.keyboard.up('1');
-  await expect(page.locator('.screen strong')).toHaveText('Ready to play');
+  await expect(page.locator('.screen strong')).toHaveText('READY TO PLAY');
 });
 
 test('shared convolution paths crossfade without restarting voices and feed the output analyser', async ({ page }) => {
@@ -36,7 +36,7 @@ test('shared convolution paths crossfade without restarting voices and feed the 
     };
   });
   await page.goto('/');
-  const reverb = page.getByRole('combobox', { name: 'Reverb', exact: true });
+  const reverb = page.getByRole('combobox', { name: 'REVERB', exact: true });
   await page.keyboard.down('1');
   const graph = () => page.evaluate(() => ({ nodes: window.graph.nodes.map(n => ({ id: n.id, type: n.kind, gain: n.gain?.value, events: n.gain?.events, length: n.buffer?.length, sample: n.buffer?.getChannelData(0)[1] })), edges: window.graph.edges, starts: window.graph.starts, stops: window.graph.stops }));
   let state = await graph();

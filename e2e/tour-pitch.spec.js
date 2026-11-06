@@ -8,7 +8,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 568 
     const next = tour.getByRole('button', { name: 'Next' });
     const observed = [];
     while (await next.isVisible()) {
-      const title = await tour.getByRole('heading').innerText();
+      const title = await tour.getByRole('heading').textContent();
       observed.push({ title, target: await page.evaluate(() => {
         const spot = document.querySelector('.tour-spotlight').getBoundingClientRect();
         return [...document.querySelectorAll('.controls, .pads, .pad-group .sustain, .chord-header, .joystick-control, .pitch-bend, .visualizer, .reset-actions')].filter(el => {
@@ -16,15 +16,15 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 568 
           return Math.abs(Math.max(0, r.left) - spot.left) < 2 && Math.abs(Math.max(0, r.top) - spot.top) < 2 && Math.abs(Math.min(innerWidth, r.right) - spot.right) < 2 && Math.abs(Math.min(innerHeight, r.bottom) - spot.bottom) < 2;
         }).map(el => el.className);
       }) });
-      if (title === 'Pitch bend') break;
+      if (title === 'PITCH BEND') break;
       await next.click();
     }
     console.log('Visible tour steps and targets:', JSON.stringify(observed));
-    await expect(tour.getByRole('heading')).toHaveText('Pitch bend');
-    await expect(tour).toContainText('2 semitones');
-    await expect(tour).toContainText('center');
-    await expect(tour).toContainText('Reset pitch bend');
-    await expect(tour).toContainText('sounding chords');
+    await expect(tour.getByRole('heading')).toHaveText('PITCH BEND');
+    await expect(tour).toContainText('2 SEMITONES');
+    await expect(tour).toContainText('CENTER');
+    await expect(tour).toContainText('RESET PITCH BEND');
+    await expect(tour).toContainText('SOUNDING CHORDS');
     await expect.poll(async () => page.evaluate(() => {
       const target = document.querySelector('.pitch-bend').getBoundingClientRect();
       const spot = document.querySelector('.tour-spotlight').getBoundingClientRect();
@@ -37,11 +37,11 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 568 
     })).toBe(true);
     await tour.getByRole('button', { name: 'Back' }).focus();
     await page.keyboard.press('Enter');
-    await expect(tour.getByRole('heading')).toHaveText('Chord joystick');
+    await expect(tour.getByRole('heading')).toHaveText('CHORD JOYSTICK');
     await tour.getByRole('button', { name: 'Next' }).focus();
     await page.keyboard.press('Enter');
-    await expect(tour.getByRole('heading')).toHaveText('Pitch bend');
+    await expect(tour.getByRole('heading')).toHaveText('PITCH BEND');
     await page.keyboard.press('Enter');
-    await expect(tour.getByRole('heading')).toHaveText('Metronome');
+    await expect(tour.getByRole('heading')).toHaveText('METRONOME');
   });
 }

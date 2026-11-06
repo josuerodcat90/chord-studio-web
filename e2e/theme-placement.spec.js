@@ -19,6 +19,6 @@ for (const width of [1440, 320]) {
     await page.keyboard.down('1');
     await expect(page.locator('.screen strong')).toHaveText('C');
     await page.keyboard.up('1');
-    await expect(page.locator('.screen strong')).toHaveText('Ready to play');
+    await expect(page.locator('.screen strong')).toHaveText('READY TO PLAY');
   });
 }

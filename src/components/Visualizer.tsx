@@ -1,11 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function Visualizer({ analyser, active, theme, children }: { analyser: React.RefObject<AnalyserNode | null>; active: boolean; theme: string; children: React.ReactNode }) {
+  const { t } = useTranslation();
   const canvas = useRef<HTMLCanvasElement>(null);
   const [mode, setMode] = useState('waveform');
   useEffect(() => {
-    const element = canvas.current!;
-    const ctx = element.getContext('2d')!;
+    // Redraw even when inactive so a theme change updates the canvas colors.
+    void theme;
+    const element = canvas.current;
+    const ctx = element?.getContext('2d');
+    if (!element || !ctx) return;
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let frame: number;
     const draw = () => {
@@ -50,5 +56,5 @@ export default function Visualizer({ analyser, active, theme, children }: { anal
     update();
     return () => { cancelAnimationFrame(frame); observer.disconnect(); document.removeEventListener('visibilitychange', update); motion.removeEventListener('change', update); };
   }, [mode, active, analyser, theme]);
-  return <section className="visualizer" aria-label="Audio visualizer"><div className="visualizer-header"><span className="section-label">AUDIO VISUALIZER</span><div className="switches" role="group" aria-label="Visualizer mode">{[['waveform', 'Waveform'], ['spectrum', 'Spectrum']].map(([value, label]) => <button type="button" key={value} className={mode === value ? 'selected' : ''} aria-pressed={mode === value} onClick={() => setMode(value)}>{label}</button>)}</div></div><div className="display-row">{children}<canvas ref={canvas} aria-hidden="true" /></div></section>;
+  return <section className="visualizer" aria-label={t('visualizer.label')}><div className="visualizer-header"><span className="section-label">{t('visualizer.heading')}</span><fieldset className="switches visualizer-modes" aria-label={t('visualizer.mode')}>{['waveform', 'spectrum'].map(value => <button type="button" key={value} className={mode === value ? 'selected' : ''} aria-pressed={mode === value} onClick={() => setMode(value)}>{t(`visualizer.${value}`)}</button>)}</fieldset></div><div className="display-row">{children}<canvas ref={canvas} tabIndex={-1} aria-hidden="true" /></div></section>;
 }

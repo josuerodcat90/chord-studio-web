@@ -19,7 +19,7 @@ test('diagonal dots follow every theme and retain active feedback', async ({ pag
     await page.keyboard.down('ArrowRight');
     const activeDot = joystick.locator('[data-direction="up-right"]');
     await expect(activeDot).toHaveClass(/active/);
-    await expect(page.locator('#joystick-status')).toHaveText('up-right');
+    await expect(page.locator('#joystick-status')).toHaveText('UP-RIGHT');
     const active = await activeDot.evaluate(el => ({ color: getComputedStyle(el).backgroundColor, shadow: getComputedStyle(el).boxShadow }));
     expect(active.color).not.toBe(inactive[0]);
     expect(active.shadow).not.toBe('none');
@@ -27,7 +27,7 @@ test('diagonal dots follow every theme and retain active feedback', async ({ pag
     await page.keyboard.up('ArrowRight');
     await page.keyboard.up('ArrowUp');
     await expect(activeDot).not.toHaveClass(/active/);
-    await expect(page.locator('#joystick-status')).toHaveText('center');
+    await expect(page.locator('#joystick-status')).toHaveText('CENTER');
   }
   expect(inactiveColors.size).toBe(5);
   expect(activeColors.size).toBe(5);

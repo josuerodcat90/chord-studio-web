@@ -34,7 +34,7 @@ test('mobile layout fits and joystick directions are accessible but not visibly 
   await expect(status).toHaveAttribute('aria-live', 'polite');
   await expect(status).toHaveCSS('position', 'absolute');
   await page.keyboard.down('ArrowRight');
-  await expect(status).toHaveText('right');
+  await expect(status).toHaveText('RIGHT');
   await page.keyboard.up('ArrowRight');
-  await expect(status).toHaveText('center');
+  await expect(status).toHaveText('CENTER');
 });

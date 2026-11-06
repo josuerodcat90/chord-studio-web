@@ -8,7 +8,7 @@ for (const input of ['mouse', 'touch']) {
     const stick = page.getByRole('application', { name: 'Chord joystick' });
     const toggle = page.getByRole('button', { name: 'Sustain joystick' });
     const status = page.locator('#joystick-status');
-    const chordSustain = page.getByRole('button', { name: 'Sustain chord I', exact: true });
+    const chordSustain = page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true });
     const cdp = input === 'touch' ? await context.newCDPSession(page) : null;
     const drag = async () => {
       await stick.scrollIntoViewIfNeeded();
@@ -23,16 +23,16 @@ for (const input of ['mouse', 'touch']) {
     };
     await expect(toggle).toHaveAttribute('aria-pressed', 'false');
     await drag();
-    await expect(status).toHaveText('center');
+    await expect(status).toHaveText('CENTER');
     await toggle.click();
     await expect(chordSustain).toHaveAttribute('aria-pressed', 'false');
     await drag();
-    await expect(status).toHaveText('right');
+    await expect(status).toHaveText('RIGHT');
     await toggle.click();
-    await expect(status).toHaveText('center');
+    await expect(status).toHaveText('CENTER');
     await expect(toggle).toHaveAttribute('aria-pressed', 'false');
     await drag();
-    await expect(status).toHaveText('center');
+    await expect(status).toHaveText('CENTER');
   });
 }
 
@@ -40,7 +40,7 @@ test('keyboard arrows still return to center with joystick sustain enabled', asy
   await page.goto('/');
   await page.getByRole('button', { name: 'Sustain joystick' }).click();
   await page.keyboard.down('ArrowUp');
-  await expect(page.locator('#joystick-status')).toHaveText('up');
+  await expect(page.locator('#joystick-status')).toHaveText('UP');
   await page.keyboard.up('ArrowUp');
-  await expect(page.locator('#joystick-status')).toHaveText('center');
+  await expect(page.locator('#joystick-status')).toHaveText('CENTER');
 });

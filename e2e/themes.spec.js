@@ -14,7 +14,7 @@ test('defaults to mint and switches distinct palettes while preserving playback'
   await page.keyboard.down('1');
   await expect(page.locator('.screen strong')).toHaveText('C');
   await page.keyboard.up('1');
-  await expect(page.locator('.screen strong')).toHaveText('Ready to play');
+  await expect(page.locator('.screen strong')).toHaveText('READY TO PLAY');
 });
 
 test('persists the selected theme after reload', async ({ page }) => {

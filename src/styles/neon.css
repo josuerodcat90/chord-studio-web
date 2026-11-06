@@ -46,8 +46,8 @@
 }
 :root[data-theme="neon"] .visualizer .switches button { border-color: #246e69; }
 :root[data-theme="neon"] .visualizer .switches .selected { border-color: var(--accent); }
-:root[data-theme="neon"] .controls .volume input,
-:root[data-theme="neon"] .pitch-bend input { accent-color: var(--accent); }
+:root[data-theme="neon"] .pitch-bend input,
+:root[data-theme="neon"] .controls .volume input { accent-color: var(--accent); }
 :root[data-theme="neon"] .joystick-sustain[aria-pressed="true"] .toggle-track { background: #278e81; }
 :root[data-theme="neon"] :is(header, .control-grid) { border-color: #246e69; }
 :root[data-theme="neon"] :is(.header-note, .brand-sub, footer) { color: #8bbab4; }

@@ -31,31 +31,31 @@ test('pitch reset restores sounding notes without restarting them', async ({ pag
 test('configuration reset stops inputs and restores defaults while preserving unrelated preferences', async ({ page }) => {
   await page.evaluate(() => localStorage.setItem('unrelated', 'keep'));
   await page.getByLabel('Theme').selectOption('sky');
-  await page.getByRole('button', { name: 'Play chord I', exact: true }).click({ button: 'right' });
+  await page.getByRole('button', { name: 'PLAY CHORD I', exact: true }).click({ button: 'right' });
   await page.keyboard.press('q');
   for (const [label, value] of [['KEY','2'], ['VOICE','Bright'], ['CHORD COLOR','seventh'], ['Reverb','hall']]) await page.getByLabel(label).selectOption(value);
   await page.getByLabel('VOLUME').fill('0.2');
   await page.getByLabel('Pitch bend').fill('1');
-  await page.getByRole('button', { name: 'Sustain chord I', exact: true }).click();
+  await page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true }).click();
   await page.keyboard.press('q');
   await page.keyboard.down('2');
   await page.getByRole('button', { name: 'Sustain joystick' }).click();
   await page.keyboard.down('ArrowUp');
   await page.getByRole('button', { name: 'Reset Configuration' }).click();
   for (const [label, value] of [['KEY','0'], ['VOICE','Warm'], ['CHORD COLOR','triad'], ['Reverb','off'], ['VOLUME','0.4'], ['Pitch bend','0'], ['Theme','sky']]) await expect(page.getByLabel(label)).toHaveValue(value);
-  await expect(page.locator('.screen strong')).toHaveText('Ready to play');
-  await expect(page.getByRole('button', { name: 'Sustain chord I', exact: true })).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('.screen strong')).toHaveText('READY TO PLAY');
+  await expect(page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true })).toHaveAttribute('aria-pressed', 'false');
   await expect(page.getByRole('button', { name: 'Sustain joystick' })).toHaveAttribute('aria-pressed', 'false');
-  await expect(page.locator('#joystick-status')).toHaveText('center');
+  await expect(page.locator('#joystick-status')).toHaveText('CENTER');
   expect(await page.evaluate(() => window.notes.every(n => n.stopped))).toBe(true);
   await page.keyboard.up('2'); await page.keyboard.up('ArrowUp');
-  await expect(page.locator('.screen strong')).toHaveText('Ready to play');
+  await expect(page.locator('.screen strong')).toHaveText('READY TO PLAY');
   await page.reload();
   await expect(page.getByLabel('Theme')).toHaveValue('sky');
   await expect(page.getByRole('dialog', { name: 'Guided tour' })).toHaveCount(0);
   expect(await page.evaluate(() => localStorage.getItem('unrelated'))).toBe('keep');
   await page.keyboard.down('1'); await expect(page.locator('.screen strong')).toHaveText('C'); await page.keyboard.up('1');
-  await page.keyboard.down('q'); await expect(page.locator('.screen strong')).toHaveText('Ready to play'); await page.keyboard.up('q');
+  await page.keyboard.down('q'); await expect(page.locator('.screen strong')).toHaveText('READY TO PLAY'); await page.keyboard.up('q');
 });
 
 test('stop only preserves pitch and configuration', async ({ page }) => {
@@ -66,5 +66,5 @@ test('stop only preserves pitch and configuration', async ({ page }) => {
   await expect(page.getByLabel('Pitch bend')).toHaveValue('1');
   await expect(page.getByLabel('KEY')).toHaveValue('2');
   await page.keyboard.up('1');
-  await expect(page.locator('.screen strong')).toHaveText('Ready to play');
+  await expect(page.locator('.screen strong')).toHaveText('READY TO PLAY');
 });

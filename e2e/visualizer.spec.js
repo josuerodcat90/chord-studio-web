@@ -3,12 +3,12 @@ import { test, expect } from './fixture.js';
 test('switches visualizations, draws idle and combined audio, and pauses when hidden', async ({ page }) => {
   await page.addInitScript(() => {
     window.trace = { edges: [], lines: [], bars: 0, time: 0, frequency: 0 };
-    const context = { clearRect() {}, beginPath() {}, moveTo(x,y) { window.trace.lines.push(['move', y]); }, lineTo(x,y) { window.trace.lines.push(['line', y]); }, stroke() {}, fillRect() { window.trace.bars++; }, setTransform() {} };
+    const context = { clearRect() {}, beginPath() {}, moveTo(_x,y) { window.trace.lines.push(['move', y]); }, lineTo(_x,y) { window.trace.lines.push(['line', y]); }, stroke() {}, fillRect() { window.trace.bars++; }, setTransform() {} };
     HTMLCanvasElement.prototype.getContext = () => context;
     window.AudioContext = class {
       currentTime = 0; sampleRate = 100; destination = { name: 'destination' };
       resume() {} close() {}
-      createBuffer(channels, length) { return { getChannelData() { return new Float32Array(length); } }; }
+      createBuffer(_channels, length) { return { getChannelData() { return new Float32Array(length); } }; }
       createConvolver() { return { name: 'convolver', connect(node) { window.trace.edges.push(['convolver', node.name]); } }; }
       createAnalyser() { return { name: 'analyser', fftSize: 2048, get frequencyBinCount() { return this.fftSize / 2; }, connect: node => window.trace.edges.push(['analyser', node.name]), getByteTimeDomainData(data) { window.trace.time++; data.fill(160); }, getByteFrequencyData(data) { window.trace.frequency++; data.fill(100); } }; }
       createGain() { return { name: 'gain', gain: { setValueAtTime() {}, linearRampToValueAtTime() {}, cancelScheduledValues() {}, setTargetAtTime() {} }, connect(node) { window.trace.edges.push(['gain', node.name]); return node; } }; }
@@ -47,7 +47,7 @@ test('repressing a latched sustained chord stops it without disabling sustain or
     window.AudioContext = class {
       currentTime = 0; sampleRate = 100; destination = {};
       resume() {} close() {}
-      createBuffer(channels, length) { return { getChannelData() { return new Float32Array(length); } }; }
+      createBuffer(_channels, length) { return { getChannelData() { return new Float32Array(length); } }; }
       createConvolver() { return { connect() {} }; }
       createAnalyser() { return { connect() {}, fftSize: 2048, frequencyBinCount: 1024, getByteTimeDomainData(data) { data.fill(128); }, getByteFrequencyData(data) { data.fill(0); } }; }
       createGain() { return { gain: { setValueAtTime() {}, linearRampToValueAtTime() {}, cancelScheduledValues() {}, setTargetAtTime() {} }, connect() {} }; }
@@ -55,7 +55,7 @@ test('repressing a latched sustained chord stops it without disabling sustain or
     };
   });
   await page.goto('/');
-  const sustain = page.getByRole('button', { name: 'Sustain chord I', exact: true });
+  const sustain = page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true });
   await sustain.click();
   await page.keyboard.down('1'); await page.keyboard.up('1');
   await page.keyboard.down('2');

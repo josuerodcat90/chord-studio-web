@@ -37,13 +37,13 @@ for (const width of [1440, 320]) {
         expect(box.x + box.width).toBeLessThanOrEqual(screenBox.x + screenBox.width);
       }
     };
-    await expect(screen.locator('strong')).toHaveText('Ready to play');
+    await expect(screen.locator('strong')).toHaveText('READY TO PLAY');
     await checkContent();
     await page.keyboard.down('1');
     await expect(screen.locator('strong')).toHaveText('C');
     await checkContent();
     await page.keyboard.up('1');
-    await expect(screen.locator('strong')).toHaveText('Ready to play');
+    await expect(screen.locator('strong')).toHaveText('READY TO PLAY');
     await page.getByRole('button', { name: 'Spectrum' }).click();
     await expect(page.getByRole('button', { name: 'Spectrum' })).toHaveAttribute('aria-pressed', 'true');
   });

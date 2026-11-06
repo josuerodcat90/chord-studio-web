@@ -11,7 +11,7 @@ test('first visit and interrupted reload show the tour; closing persists and all
   await tour.getByRole('button', { name: 'Next' }).click();
   expect(await page.evaluate(key => localStorage.getItem(key), flag)).toBeNull();
   await page.reload();
-  await expect(tour.getByRole('heading')).toHaveText('Audio visualizer');
+  await expect(tour.getByRole('heading')).toHaveText('AUDIO VISUALIZER');
   await tour.getByRole('button', { name: 'Close' }).click();
   await expect(launch).toBeFocused();
   expect(await page.evaluate(key => localStorage.getItem(key), flag)).toBe('true');
@@ -36,7 +36,7 @@ test('finishing persists and manual replay remains available', async ({ page }) 
   await page.reload();
   await expect(tour).toHaveCount(0);
   await page.getByRole('button', { name: 'Start guided tour' }).click();
-  await expect(tour.getByRole('heading')).toHaveText('Audio visualizer');
+  await expect(tour.getByRole('heading')).toHaveText('AUDIO VISUALIZER');
 });
 
 test('Escape on the first visit persists dismissal', async ({ page }) => {
@@ -52,7 +52,7 @@ test('chord hover and active colors follow every live theme switch', async ({ pa
   await page.goto('/');
   const tour = page.getByRole('dialog', { name: 'Guided tour' });
   if (await tour.isVisible()) await tour.getByRole('button', { name: 'Close' }).click();
-  const pad = page.getByRole('button', { name: 'Play chord I', exact: true });
+  const pad = page.getByRole('button', { name: 'PLAY CHORD I', exact: true });
   for (const [theme, color] of Object.entries({ mint: 'rgb(180, 205, 179)', salmon: 'rgb(233, 169, 154)', orange: 'rgb(238, 185, 130)', lavender: 'rgb(199, 174, 219)', sky: 'rgb(159, 203, 210)' })) {
     await page.getByLabel('Theme').selectOption(theme);
     await pad.hover();

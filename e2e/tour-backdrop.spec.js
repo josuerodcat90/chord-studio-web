@@ -47,7 +47,7 @@ test('backdrop follows every step, blocks outside clicks, and dismisses accessib
 test('spotlight tracks scroll and resize on mobile without interrupting playback', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Sustain chord I', exact: true }).click();
+  await page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true }).click();
   await page.keyboard.press('1');
   await expect(page.locator('.screen strong')).toHaveText('C');
   await page.getByRole('button', { name: 'Start guided tour' }).click();

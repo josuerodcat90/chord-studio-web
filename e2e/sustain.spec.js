@@ -6,7 +6,7 @@ test('layers keyboard chords, sustains independently, and colors every sounding 
     window.AudioContext = class {
       currentTime = 0; sampleRate = 100; destination = {};
       resume() {} close() {}
-      createBuffer(channels, length) { return { getChannelData() { return new Float32Array(length); } }; }
+      createBuffer(_channels, length) { return { getChannelData() { return new Float32Array(length); } }; }
       createConvolver() { return { connect() {} }; }
       createAnalyser() { return { connect() {}, fftSize: 2048, frequencyBinCount: 1024, getByteTimeDomainData(data) { data.fill(128); }, getByteFrequencyData(data) { data.fill(0); } }; }
       createOscillator() {
@@ -18,7 +18,7 @@ test('layers keyboard chords, sustains independently, and colors every sounding 
   });
   const sounding = () => page.evaluate(() => window.notes.filter(n => !n.stopped).map(n => n.note).sort((a, b) => a - b));
   await page.goto('/');
-  const sustain = page.getByRole('button', { name: 'Sustain chord I', exact: true });
+  const sustain = page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true });
   await sustain.click();
   await expect(sustain).toHaveAttribute('aria-pressed', 'true');
   await page.keyboard.down('1');

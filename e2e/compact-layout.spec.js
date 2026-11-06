@@ -34,7 +34,7 @@ test('mobile controls remain visible, usable and within the viewport', async ({ 
   await page.setViewportSize({ width: 320, height: 800 });
   await page.goto('/');
   const color = page.getByRole('combobox', { name: 'Chord color' });
-  for (const control of [page.getByLabel('Theme'), color, page.getByRole('application', { name: 'Chord joystick' }), page.getByRole('button', { name: 'Sustain joystick' }), page.getByRole('button', { name: 'Play chord I', exact: true }), page.getByRole('button', { name: 'Sustain chord I', exact: true })]) {
+  for (const control of [page.getByLabel('Theme'), color, page.getByRole('application', { name: 'Chord joystick' }), page.getByRole('button', { name: 'Sustain joystick' }), page.getByRole('button', { name: 'PLAY CHORD I', exact: true }), page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true })]) {
     await expect(control).toBeVisible();
     const box = await control.boundingBox();
     expect(box.x).toBeGreaterThanOrEqual(0);
@@ -58,5 +58,5 @@ test('mobile controls remain visible, usable and within the viewport', async ({ 
   await page.keyboard.down('1');
   await expect(page.locator('.screen strong')).toHaveText('C');
   await page.keyboard.up('1');
-  await expect(page.locator('.screen strong')).toHaveText('Ready to play');
+  await expect(page.locator('.screen strong')).toHaveText('READY TO PLAY');
 });

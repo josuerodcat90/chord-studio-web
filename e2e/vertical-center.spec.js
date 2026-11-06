@@ -27,9 +27,9 @@ for (const [name, viewport] of [['desktop', { width: 1280, height: 500 }], ['mob
     await reset.click();
     await page.getByRole('button', { name: 'Start guided tour' }).click();
     const tour = page.getByRole('dialog', { name: 'Guided tour' });
-    await expect(tour.getByRole('heading')).toHaveText('Audio visualizer');
+    await expect(tour.getByRole('heading')).toHaveText('AUDIO VISUALIZER');
     await tour.getByRole('button', { name: 'Next' }).click();
-    await expect(tour.getByRole('heading')).toHaveText('Sound controls');
+    await expect(tour.getByRole('heading')).toHaveText('SOUND CONTROLS');
     await tour.getByRole('button', { name: 'Close' }).click();
     await expect(page.getByRole('button', { name: 'Start guided tour' })).toBeFocused();
   });

@@ -63,7 +63,7 @@ export function createAudioTransitions(context, createNote) {
       }
       const pending = tails.get(degree);
       const next = pitches.map(pitch => {
-        let index = previous.findIndex(note => note.note === pitch && note.voice === voice);
+        const index = previous.findIndex(note => note.note === pitch && note.voice === voice);
         if (index !== -1) return previous.splice(index, 1)[0];
         let note = pending && [...pending].find(candidate => candidate.note === pitch && candidate.voice === voice && candidate.releaseEnd > now);
         if (note) {
@@ -85,7 +85,7 @@ export function createAudioTransitions(context, createNote) {
         }
         return note;
       });
-      previous.forEach(note => releaseNote(degree, note, now));
+      previous.forEach(note => { releaseNote(degree, note, now); });
       active.set(degree, next);
       return next;
     },

@@ -4,7 +4,7 @@ test('shared visualizer heading and desktop controls align', async ({ page }) =>
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/');
   const section = page.getByRole('region', { name: 'Audio visualizer' });
-  await expect(section.locator('.screen strong')).toHaveText('Ready to play');
+  await expect(section.locator('.screen strong')).toHaveText('READY TO PLAY');
   await expect(section.locator('canvas')).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
   // Measure all geometry in one snapshot, after font metrics have settled.
@@ -26,7 +26,7 @@ test('shared visualizer heading and desktop controls align', async ({ page }) =>
 test('joystick sustain is a keyboard-operable tactile toggle independent of chord sustain', async ({ page }) => {
   await page.goto('/');
   const toggle = page.getByRole('button', { name: 'Sustain joystick' });
-  const chord = page.getByRole('button', { name: 'Sustain chord I', exact: true });
+  const chord = page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true });
   await expect(toggle.locator('.toggle-track')).toBeVisible();
   await expect(toggle).toHaveAttribute('aria-pressed', 'false');
   await toggle.focus();
