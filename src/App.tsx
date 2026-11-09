@@ -268,9 +268,13 @@ export default function App() {
     [...activeRef.current.keys()].forEach(degree => { play(degree, next); });
   };
   const arrowDirection = () => {
-    const last = (axis: string[]) => [...arrowHeld.current].reverse().find(key => axis.includes(key));
-    const vertical = ({ arrowup: 'up', arrowdown: 'down' } as Record<string, string>)[last(['arrowup', 'arrowdown']) ?? ''];
-    const horizontal = ({ arrowleft: 'left', arrowright: 'right' } as Record<string, string>)[last(['arrowleft', 'arrowright']) ?? ''];
+    const axis = (negative: string, positive: string, negativeDirection: string, positiveDirection: string) => {
+      const negativeHeld = arrowHeld.current.includes(negative);
+      const positiveHeld = arrowHeld.current.includes(positive);
+      return negativeHeld === positiveHeld ? '' : negativeHeld ? negativeDirection : positiveDirection;
+    };
+    const vertical = axis('arrowup', 'arrowdown', 'up', 'down');
+    const horizontal = axis('arrowleft', 'arrowright', 'left', 'right');
     return [vertical, horizontal].filter(Boolean).join('-') || 'center';
   };
   const pointerDirection = (event: React.PointerEvent<HTMLDivElement>) => {

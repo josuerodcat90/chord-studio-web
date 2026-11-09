@@ -51,6 +51,38 @@ test('pointer joystick changes a held chord and centers on release', async ({ pa
   await page.keyboard.up('1');
 });
 
+test('opposing keyboard arrows cancel on each axis and restore the remaining direction', async ({ page }) => {
+  await page.goto('/');
+  await page.keyboard.down('1');
+  for (const [first, second, firstChord, secondChord] of [
+    ['ArrowUp', 'ArrowDown', 'Cm', 'C 6'],
+    ['ArrowDown', 'ArrowUp', 'C 6', 'Cm'],
+    ['ArrowLeft', 'ArrowRight', 'C sus4', 'C maj7'],
+    ['ArrowRight', 'ArrowLeft', 'C maj7', 'C sus4'],
+  ]) {
+    await page.keyboard.down(first);
+    await expect(page.locator('.screen strong')).toHaveText(firstChord);
+    await page.keyboard.down(second);
+    await expect(page.locator('.screen strong')).toHaveText('C');
+    await page.keyboard.up(first);
+    await expect(page.locator('.screen strong')).toHaveText(secondChord);
+    await page.keyboard.up(second);
+    await expect(page.locator('.screen strong')).toHaveText('C');
+  }
+  await page.keyboard.down('ArrowUp');
+  await page.keyboard.down('ArrowDown');
+  await page.keyboard.down('ArrowRight');
+  await expect(page.locator('.screen strong')).toHaveText('C maj7');
+  await page.keyboard.down('ArrowLeft');
+  await expect(page.locator('.screen strong')).toHaveText('C');
+  await page.keyboard.up('ArrowDown');
+  await expect(page.locator('.screen strong')).toHaveText('Cm');
+  await page.keyboard.up('ArrowUp');
+  await page.keyboard.up('ArrowRight');
+  await page.keyboard.up('ArrowLeft');
+  await page.keyboard.up('1');
+});
+
 test('diagonal keyboard directions combine and release to remaining arrow', async ({ page }) => {
   await page.goto('/');
   await page.keyboard.down('1');
