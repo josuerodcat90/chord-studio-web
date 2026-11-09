@@ -28,59 +28,33 @@ export function createAudioTransitions(context, createNote) {
     };
   }
 
-  /** Crossfade all active notes when voice changes, preventing volume spike. */
-  function crossfadeVoiceChange(degree, now) {
-    const previous = active.get(degree) || [];
-    // Count releasing oscillators per pitch (for proportional scaling of new targets)
-    const releaseCountByPitch = new Map();
-    for (const note of previous) {
-      releaseCountByPitch.set(note.note, (releaseCountByPitch.get(note.note) || 0) + 1);
-    }
-    // Cancel existing automation and schedule linear ramp-down over ~50ms
-    for (const note of previous) {
-      const { gain } = note.gain;
-      if (typeof gain.cancelScheduledValues === 'function') {
-        gain.cancelScheduledValues(now);
-      } else {
-        holdGain(gain, now);
-      }
-      // setTargetAtTime(0, now, 0.043) ≈ linear ramp to 0 in ~50ms
-      gain.setTargetAtTime(0, now, 0.043);
-    }
-    return releaseCountByPitch;
-  }
-
   return {
     transition(degree, pitches, voice, volume) {
       const now = context.currentTime;
       const previous = [...(active.get(degree) || [])];
-      // Detect voice change: all active notes have different voice from target
-      const isVoiceChange = previous.length > 0 &&
-        previous.every(note => note.voice !== voice);
-      let releaseCountByPitch = new Map();
-      if (isVoiceChange) {
-        releaseCountByPitch = crossfadeVoiceChange(degree, now);
-      }
       const pending = tails.get(degree);
+      // Snapshot all sounding notes: earlier tails can overlap even without an active voice.
+      const sounding = [...previous, ...(pending ? [...pending].filter(note => note.releaseEnd > now) : [])];
       const next = pitches.map(pitch => {
         const index = previous.findIndex(note => note.note === pitch && note.voice === voice);
         if (index !== -1) return previous.splice(index, 1)[0];
         let note = pending && [...pending].find(candidate => candidate.note === pitch && candidate.voice === voice && candidate.releaseEnd > now);
+        const overlapping = sounding.some(candidate => candidate.note === pitch && candidate !== note);
+        const target = volume * 0.12;
         if (note) {
           pending.delete(note);
           if (!pending.size) tails.delete(degree);
           // A later stop() replaces the pending stop; the next release schedules a new one.
           note.osc.stop(now + 86400);
           holdGain(note.gain.gain, now);
-          note.gain.gain.setTargetAtTime(volume * 0.12, now, 0.025);
+          // Matching the release time constant keeps the sum of all envelopes
+          // bounded by the target, regardless of their individual phases.
+          note.gain.gain.setTargetAtTime(target, now, overlapping ? 0.045 : 0.025);
         } else {
           note = createNote(pitch, voice);
           note.gain.gain.setValueAtTime(0, now);
-          // Scale target proportionally to release count at this pitch (bounds combined gain during overlap)
-          const overlapScale = releaseCountByPitch.get(pitch) !== undefined
-            ? 1 + releaseCountByPitch.get(pitch)
-            : 1;
-          note.gain.gain.linearRampToValueAtTime(volume * 0.12 / overlapScale, now + 0.025);
+          if (overlapping) note.gain.gain.setTargetAtTime(target, now, 0.045);
+          else note.gain.gain.linearRampToValueAtTime(target, now + 0.025);
           note.osc.start(now);
         }
         return note;
@@ -88,6 +62,17 @@ export function createAudioTransitions(context, createNote) {
       previous.forEach(note => { releaseNote(degree, note, now); });
       active.set(degree, next);
       return next;
+    },
+    setVolume(volume) {
+      const now = context.currentTime;
+      for (const [degree, notes] of active) {
+        const pending = tails.get(degree);
+        for (const note of notes) {
+          const overlapping = pending && [...pending].some(tail => tail.note === note.note && tail.releaseEnd > now);
+          holdGain(note.gain.gain, now);
+          note.gain.gain.setTargetAtTime(volume * 0.12, now, overlapping ? 0.045 : 0.025);
+        }
+      }
     },
     release(degree) {
       const now = context.currentTime;

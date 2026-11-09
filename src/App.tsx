@@ -125,14 +125,7 @@ export default function App() {
   const [draggingPads, setDraggingPads] = useState(false);
   const changeVolume = (value: number) => {
     setVolume(value);
-    if (!audio.current) return;
-    const now = audio.current.currentTime;
-    for (const notes of playing.current.values()) {
-      for (const { gain } of notes) {
-        gain.gain.cancelScheduledValues(now);
-        gain.gain.setTargetAtTime(value * 0.12, now, 0.025);
-      }
-    }
+    transitions.current?.setVolume(value);
   };
   const changePitchBend = (value: number) => {
     pitchBendRef.current = value;

@@ -9,16 +9,20 @@ test('joystick changes the sounding oscillator notes and restores them', async (
       createBuffer(_channels, length) { return { getChannelData() { return new Float32Array(length); } }; }
       createConvolver() { return { connect() {} }; }
       createAnalyser() { return { connect() {}, fftSize: 2048, frequencyBinCount: 1024, getByteTimeDomainData(data) { data.fill(128); }, getByteFrequencyData(data) { data.fill(0); } }; }
-      createOscillator() { const osc = { frequency: {}, connect: gain => gain, start: () => window.playedFrequencies.push(osc.frequency.value), stop() {} }; return osc; }
-      createGain() { return { gain: { setValueAtTime() {}, linearRampToValueAtTime() {}, cancelScheduledValues() {}, setTargetAtTime() {} }, connect() {} }; }
+      createOscillator() { const osc = { frequency: {}, connect(gain) { osc.gain = gain.gain; return gain; }, start() { window.playedFrequencies.push(osc); }, stop(time) { osc.stopAt = time; } }; return osc; }
+      createGain() { return { gain: { value: 0, setValueAtTime(value) { this.value = value; }, linearRampToValueAtTime(value) { this.value = value; }, cancelScheduledValues() {}, setTargetAtTime(value) { this.value = value; } }, connect() {} }; }
     };
   });
   await page.goto('/');
+  const activeNotes = () => page.evaluate(() => window.playedFrequencies.filter(osc => osc.gain.value > 0).map(osc => Math.round(69 + 12 * Math.log2(osc.frequency.value / 440))).sort((a, b) => a - b));
   await page.keyboard.down('1');
+  expect(await activeNotes()).toEqual([60, 64, 67]);
   await page.keyboard.down('ArrowUp');
+  expect(await activeNotes()).toEqual([60, 63, 67]);
   await page.keyboard.up('ArrowUp');
-  const notes = await page.evaluate(() => window.playedFrequencies.map(f => Math.round(69 + 12 * Math.log2(f / 440))));
-  expect(notes).toEqual([60, 64, 67, 60, 63, 67, 60, 64, 67]);
+  expect(await activeNotes()).toEqual([60, 64, 67]);
+  // Common tones stay running and the released E is reused when returning to C.
+  expect(await page.evaluate(() => window.playedFrequencies.length)).toBe(4);
   await page.keyboard.up('1');
 });
 

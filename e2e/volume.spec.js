@@ -10,8 +10,8 @@ test('volume immediately updates sustained and layered notes without restarting 
       createConvolver() { return { connect() {} }; }
       createAnalyser() { return { connect() {}, fftSize: 2048, frequencyBinCount: 1024, getByteTimeDomainData(data) { data.fill(128); }, getByteFrequencyData(data) { data.fill(0); } }; }
       createOscillator() {
-        const note = { stopped: false, gain: null };
-        return { frequency: {}, connect(gain) { note.gain = gain.gain; return gain; }, start() { window.notes.push(note); }, stop() { note.stopped = true; } };
+        const note = { stopAt: null, gain: null };
+        return { frequency: {}, connect(gain) { note.gain = gain.gain; return gain; }, start() { window.notes.push(note); }, stop(time) { note.stopAt = time; } };
       }
       createGain() {
         const gain = { value: 0, setValueAtTime(value) { this.value = value; }, linearRampToValueAtTime(value) { this.value = value; }, cancelScheduledValues() {}, setTargetAtTime(value) { this.value = value; } };
@@ -24,7 +24,9 @@ test('volume immediately updates sustained and layered notes without restarting 
   await page.getByRole('button', { name: 'SUSTAIN CHORD ii', exact: true }).click();
   await page.keyboard.press('1');
   await page.keyboard.press('2');
-  const state = () => page.evaluate(() => ({ count: window.notes.length, sounding: window.notes.filter(note => !note.stopped).map(note => note.gain.value) }));
+  // A release schedules a near stop; reuse replaces it with a distant stop.
+  // Release tails still run, but are no longer controlled by the volume slider.
+  const state = () => page.evaluate(() => ({ count: window.notes.length, sounding: window.notes.filter(note => note.stopAt === null || note.stopAt > 2).map(note => note.gain.value) }));
   expect(await state()).toEqual({ count: 6, sounding: Array(6).fill(0.4 * 0.12) });
   const volume = page.getByLabel('VOLUME');
   await volume.fill('0.2');
@@ -37,7 +39,7 @@ test('volume immediately updates sustained and layered notes without restarting 
   await volume.fill('0.3');
   await volume.blur();
   await page.keyboard.down('1');
-  expect(await state()).toEqual({ count: 9, sounding: Array(3).fill(0.3 * 0.12) });
+  expect(await state()).toEqual({ count: 6, sounding: Array(3).fill(0.3 * 0.12) });
   await page.keyboard.up('1');
-  expect(await state()).toEqual({ count: 9, sounding: [] });
+  expect(await state()).toEqual({ count: 6, sounding: [] });
 });

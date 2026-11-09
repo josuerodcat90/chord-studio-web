@@ -50,23 +50,26 @@ test('repressing a latched sustained chord stops it without disabling sustain or
       createBuffer(_channels, length) { return { getChannelData() { return new Float32Array(length); } }; }
       createConvolver() { return { connect() {} }; }
       createAnalyser() { return { connect() {}, fftSize: 2048, frequencyBinCount: 1024, getByteTimeDomainData(data) { data.fill(128); }, getByteFrequencyData(data) { data.fill(0); } }; }
-      createGain() { return { gain: { setValueAtTime() {}, linearRampToValueAtTime() {}, cancelScheduledValues() {}, setTargetAtTime() {} }, connect() {} }; }
-      createOscillator() { const note = { stopped: false }; return { frequency: {}, connect: node => node, start() { window.notes.push(note); }, stop() { note.stopped = true; } }; }
+      createGain() { return { gain: { value: 0, setValueAtTime(value) { this.value = value; }, linearRampToValueAtTime(value) { this.value = value; }, cancelScheduledValues() {}, setTargetAtTime(value) { this.value = value; } }, connect() {} }; }
+      createOscillator() { const note = { gain: null, stopAt: null }; return { frequency: {}, connect(node) { note.gain = node.gain; return node; }, start() { window.notes.push(note); }, stop(time) { note.stopAt = time; } }; }
     };
   });
   await page.goto('/');
+  // Gain targets distinguish held notes from release tails that still run.
+  const activeCount = () => page.evaluate(() => window.notes.filter(n => n.gain.value > 0).length);
   const sustain = page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true });
   await sustain.click();
   await page.keyboard.down('1'); await page.keyboard.up('1');
   await page.keyboard.down('2');
-  expect(await page.evaluate(() => window.notes.filter(n => !n.stopped).length)).toBe(6);
+  expect(await activeCount()).toBe(6);
   await page.keyboard.down('1');
-  expect(await page.evaluate(() => window.notes.filter(n => !n.stopped).length)).toBe(3);
+  expect(await activeCount()).toBe(3);
   await expect(sustain).toHaveAttribute('aria-pressed', 'true');
   await page.keyboard.up('1');
-  expect(await page.evaluate(() => window.notes.filter(n => !n.stopped).length)).toBe(3);
+  expect(await activeCount()).toBe(3);
   await page.keyboard.down('1'); await page.keyboard.up('1');
-  expect(await page.evaluate(() => window.notes.filter(n => !n.stopped).length)).toBe(6);
+  expect(await activeCount()).toBe(6);
+  expect(await page.evaluate(() => window.notes.length)).toBe(6);
   await page.keyboard.up('2');
-  expect(await page.evaluate(() => window.notes.filter(n => !n.stopped).length)).toBe(3);
+  expect(await activeCount()).toBe(3);
 });
